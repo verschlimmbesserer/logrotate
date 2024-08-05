@@ -1,0 +1,31 @@
+---
+
+- name: "Install logrotate"
+  ansible.builtin.apt:
+    name: logrotate
+    state: present
+    update_cache: true
+    cache_valid_time: 86400
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Configure logrotate
+  ansible.builtin.template:
+    src: logrotate.conf.j2
+    dest: "/etc/logrotate.conf"
+    mode: "0644"
+
+- name: "Create the configurations for logrotate"
+  ansible.builtin.template:
+    src: "{{ item.value.template | default(logrotate_default_template) }}"
+    dest: "{{ logrotate_conf_dir }}/{{ item.key }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop: "{{ logrotate_conf | dict2items }}"
+  when: item.key not in logrotate_remove_conf
+
+- name: "Remove configurations for logrotate"
+  ansible.builtin.file:
+    path: "{{ logrotate_conf_dir }}/{{ item }}"
+    state: absent
+  loop: "{{ logrotate_remove_conf | flatten(levels=1) }}"

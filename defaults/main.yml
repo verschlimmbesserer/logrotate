@@ -1,0 +1,69 @@
+---
+# defaults file for logrotate
+logrotate_frequency: weekly
+
+# How many files to keep.
+logrotate_keep: 4
+
+# Should rotated logs be compressed??
+logrotate_compress: true
+
+# Use date extension on log file names
+logrotate_dateext: false
+
+# User/Group for rotated log files (Loaded by OS-Specific vars if found, or and can be set manually)
+logrotate_user: "{{ _logrotate_user[ansible_distribution] | default(_logrotate_user['default']) }}"
+logrotate_group: "{{ _logrotate_group[ansible_distribution] | default(_logrotate_group['default']) }}"
+
+_logrotate_user:
+  default: root
+
+_logrotate_group:
+  default: root
+  Debian: adm
+
+
+logrotate_remove_conf: []
+logrotate_conf_dir: "/etc/logrotate.d/"
+logrotate_default_template: logd.j2
+logrotate_conf: {}
+    # rsyslog:
+    #   - path: /var/log/syslog
+    #     frequency: daily
+    #     keep: 7
+    #     missingok: yes
+    #     notifempty: yes
+    #     delaycompress: yes
+    #     compress: yes
+    #     postrotate: /usr/lib/rsyslog/rsyslog-rotate
+    #   - path: /var/log/mail.info
+    #   - path: /var/log/mail.warn
+    #   - path: /var/log/mail.err
+    #   - path: /var/log/mail.log
+    #   - path: /var/log/daemon.log
+    #   - path: /var/log/kern.log
+    #   - path: /var/log/auth.log
+    #   - path: /var/log/user.log
+    #   - path: /var/log/lpr.log
+    #   - path: /var/log/cron.log
+    #   - path: /var/log/debug
+    #   - path: /var/log/messages
+    #   - keep: 4
+    #     frequency: weekly
+    #     missingok: yes
+    #     notifempty: yes
+    #     compress: yes
+    #     delaycompress: yes
+    #     sharedscripts: yes
+    #     postrotate: /usr/lib/rsyslog/rsyslog-rotate
+    # btmp:
+    #   - path: /var/log/btmp
+    #     missingok: yes
+    #     frequency: monthly
+    #     create: yes
+    #     create_mode: "0660"
+    #     create_user: root
+    #     create_group: utmp
+    #     dateext: yes
+    #     dateformat: "-%Y-%m-%d"
+    #     keep: 1
